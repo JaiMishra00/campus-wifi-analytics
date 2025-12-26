@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WiFi Heatmap</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+</head>
+
+<body>
+  <div id="map" style="height:100vh;"></div>
+
+  <script>
+    const map = L.map('map').setView([0,0], 1);
+
+    const bounds = [[0,0],[500,500]];
+    L.rectangle(bounds, {color:"#eee", weight:1}).addTo(map);
+    map.fitBounds(bounds);
+
+    fetch("http://<YOUR-IP>:8000/api/heatmap")
+      .then(r => r.json())
+      .then(data => {
+        const heat = data.points.map(p => [p.y, p.x, p.value]);
+        L.heatLayer(heat, {radius: 40}).addTo(map);
+      });
+  </script>
+</body>
+</html>
